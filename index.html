@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="液气进出管理">
+    <meta name="theme-color" content="#1890ff">
+    <meta name="description" content="液气进出价格统计系统 - 支持数据录入、实时统计、利润计算、Excel导出">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%231890ff' width='100' height='100' rx='20'/%3E%3Ctext x='50' y='60' font-size='40' text-anchor='middle' fill='white'%3E液%3C/text%3E%3C/svg%3E">
+    <title>液气进出管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #1890ff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1890ff 0%, #0050b3 100%);
+            color: white;
+            z-index: 9999;
+        }
+        .loading h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        .loading p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 20px;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+        }
+        .error {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: #333;
+            padding: 30px;
+            text-align: center;
+            z-index: 10000;
+        }
+        .error h2 {
+            color: #f5222d;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .error p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        .error .hint {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .error .hint p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .error button {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .network-status {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #52c41a;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            z-index: 10001;
+            display: none;
+        }
+        .network-status.offline {
+            background: #f5222d;
+        }
+    </style>
+</head>
+<body>
+    <div class="network-status" id="networkStatus">网络已连接</div>
+    
+    <div class="loading" id="loading">
+        <h1>液气进出管理</h1>
+        <div class="spinner"></div>
+        <p>正在加载应用...</p>
+    </div>
+    
+    <div class="error" id="error">
+        <h2>⚠️ 加载失败</h2>
+        <p>无法连接到服务器</p>
+        <div class="hint">
+            <p><strong>可能的原因：</strong></p>
+            <p>1. 手机和电脑不在同一WiFi网络</p>
+            <p>2. 电脑已关机或休眠</p>
+            <p>3. 网络连接不稳定</p>
+            <p><strong>解决方法：</strong></p>
+            <p>1. 确保手机和电脑连接同一WiFi</p>
+            <p>2. 检查电脑是否运行</p>
+            <p>3. 刷新页面重试</p>
+        </div>
+        <button onclick="location.reload()">🔄 重新加载</button>
+    </div>
+    
+    <button class="install-btn" id="install-btn">📱 添加到主屏幕</button>
+    
+    <iframe id="appFrame" src="http://9.128.171.226:5000"></iframe>
+    
+    <script src="/sw-register.js"></script>
+    <script>
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const iframe = document.getElementById('appFrame');
+        const networkStatus = document.getElementById('networkStatus');
+        
+        let loaded = false;
+        
+        // 网络状态检测
+        function updateNetworkStatus() {
+            if (navigator.onLine) {
+                networkStatus.style.display = 'none';
+            } else {
+                networkStatus.style.display = 'block';
+                networkStatus.textContent = '网络已断开';
+                networkStatus.classList.add('offline');
+            }
+        }
+        
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus();
+        
+        // 加载成功
+        iframe.onload = function() {
+            loaded = true;
+            loading.style.display = 'none';
+            iframe.style.display = 'block';
+        };
+        
+        // 加载失败
+        iframe.onerror = function() {
+            loading.style.display = 'none';
+            error.style.display = 'flex';
+        };
+        
+        // 超时处理
+        setTimeout(function() {
+            if (!loaded) {
+                loading.style.display = 'none';
+                error.style.display = 'flex';
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
