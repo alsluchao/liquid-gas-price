@@ -195,4 +195,38 @@ export class GasLiquidService {
     const categories = [...new Set(data.map(item => item.category))];
     return categories.sort();
   }
+
+  // 检查用户是否是管理员
+  async checkAdmin(userId: string): Promise<boolean> {
+    const client = getSupabaseClient();
+    const { data, error } = await client
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .maybeSingle();
+
+    if (error) throw new Error(`检查权限失败: ${error.message}`);
+    return !!data;
+  }
+
+  // 设置用户为管理员（需要管理员权限）
+  async setAdmin(userId: string, currentUserIsAdmin: boolean) {
+    if (!currentUserIsAdmin) {
+      throw new Error('只有管理员可以设置其他管理员');
+    }
+
+    const client = getSupabaseClient();
+    const { data, error } = await client
+      .from('user_roles')
+      .upsert(
+        { user_id: userId, role: 'admin' },
+        { onConflict: 'user_id' }
+      )
+      .select()
+      .single();
+
+    if (error) throw new Error(`设置管理员失败: ${error.message}`);
+    return data;
+  }
 }

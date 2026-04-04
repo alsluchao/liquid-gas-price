@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res, ParseIntPipe, Headers } from '@nestjs/common';
 import { Response } from 'express';
 import { GasLiquidService } from './gas-liquid.service';
 import { CreateGasLiquidDto, UpdateGasLiquidDto, QueryGasLiquidDto } from './dto/gas-liquid.dto';
@@ -37,6 +37,17 @@ export class GasLiquidController {
     const result = await this.gasLiquidService.getCategories();
     console.log('[GET /api/gas-liquid/categories] 类别列表:', result);
     return result;
+  }
+
+  @Get('check-admin')
+  async checkAdmin(@Headers('x-user-id') userId?: string) {
+    console.log('[GET /api/gas-liquid/check-admin] 检查管理员权限, userId:', userId);
+    if (!userId) {
+      return { isAdmin: false };
+    }
+    const isAdmin = await this.gasLiquidService.checkAdmin(userId);
+    console.log('[GET /api/gas-liquid/check-admin] 结果:', isAdmin);
+    return { isAdmin };
   }
 
   @Get('export')

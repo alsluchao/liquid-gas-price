@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Plus, Download, Trash, Pencil, TrendingUp, TrendingDown, DollarSign } from 'lucide-react-taro';
+import { Plus, Download, Trash, Pencil, TrendingUp, TrendingDown, DollarSign, Shield } from 'lucide-react-taro';
 import './index.css';
 
 interface GasLiquidRecord {
@@ -42,6 +42,9 @@ interface Statistics {
   total_out_quantity: number;
 }
 
+const USER_ID_KEY = 'gas_liquid_user_id';
+const ADMIN_PASSWORD = 'admin123'; // 管理员密码，实际项目中应该从后端验证
+
 const IndexPage = () => {
   const [records, setRecords] = useState<GasLiquidRecord[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -56,6 +59,10 @@ const IndexPage = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<GasLiquidRecord | null>(null);
+  const [userId, setUserId] = useState<string>('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [password, setPassword] = useState('');
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     category: '',
@@ -94,8 +101,43 @@ const IndexPage = () => {
   });
 
   useReady(() => {
-    loadData();
+    initUser();
   });
+
+  const initUser = async () => {
+    // 获取或创建用户ID
+    let storedUserId = Taro.getStorageSync(USER_ID_KEY);
+    if (!storedUserId) {
+      // 生成一个简单的用户ID（实际项目中应该使用更安全的方式）
+      storedUserId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      Taro.setStorageSync(USER_ID_KEY, storedUserId);
+    }
+    setUserId(storedUserId);
+
+    // 检查是否是管理员
+    try {
+      const res = await Network.request({
+        url: '/api/gas-liquid/check-admin',
+        header: { 'x-user-id': storedUserId }
+      });
+      setIsAdmin(res.data.data.isAdmin);
+    } catch (error) {
+      console.error('检查权限失败:', error);
+    }
+
+    loadData();
+  };
+
+  const handleAdminLogin = () => {
+    if (password === ADMIN_PASSWORD) {
+      setIsAdmin(true);
+      setShowPasswordDialog(false);
+      setPassword('');
+      Taro.showToast({ title: '管理员登录成功', icon: 'success' });
+    } else {
+      Taro.showToast({ title: '密码错误', icon: 'error' });
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -181,6 +223,10 @@ const IndexPage = () => {
   };
 
   const handleEdit = (record: GasLiquidRecord) => {
+    if (!isAdmin) {
+      Taro.showToast({ title: '需要管理员权限', icon: 'none' });
+      return;
+    }
     setSelectedRecord(record);
     setEditFormData({
       date: record.date.split('T')[0],
@@ -248,6 +294,10 @@ const IndexPage = () => {
   };
 
   const handleDelete = (record: GasLiquidRecord) => {
+    if (!isAdmin) {
+      Taro.showToast({ title: '需要管理员权限', icon: 'none' });
+      return;
+    }
     setSelectedRecord(record);
     setDeleteDialogOpen(true);
   };
@@ -355,7 +405,27 @@ const IndexPage = () => {
     <View className="w-full min-h-screen bg-gray-50 pb-20">
       {/* 顶部统计卡片 */}
       <View className="bg-gradient-to-br from-blue-500 to-blue-600 px-4 py-6 text-white">
-        <Text className="block text-lg font-bold mb-4">实时统计</Text>
+        <View className="flex justify-between items-center mb-4">
+          <Text className="text-lg font-bold">液气进出管理</Text>
+          <View className="flex items-center gap-2">
+            {isAdmin && (
+              <Badge variant="default" className="bg-green-500">
+                <Shield size={14} color="#fff" />
+                <Text className="ml-1">管理员</Text>
+              </Badge>
+            )}
+            {!isAdmin && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white bg-opacity-20 border-white border-opacity-40 text-white"
+                onClick={() => setShowPasswordDialog(true)}
+              >
+                <Text className="text-xs">管理员登录</Text>
+              </Button>
+            )}
+          </View>
+        </View>
         <View className="grid grid-cols-3 gap-4">
           <View className="text-center">
             <TrendingDown size={24} className="mx-auto mb-1 opacity-80" color="#fff" />
@@ -524,22 +594,25 @@ const IndexPage = () => {
                             {new Date(record.date).toLocaleDateString('zh-CN')}
                           </Text>
                         </View>
-                        <View className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(record)}
-                          >
-                            <Pencil size={16} color="#1890ff" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(record)}
-                          >
-                            <Trash size={16} color="#ff4d4f" />
-                          </Button>
-                        </View>
+                        {/* 只有管理员才显示编辑删除按钮 */}
+                        {isAdmin && (
+                          <View className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(record)}
+                            >
+                              <Pencil size={16} color="#1890ff" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(record)}
+                            >
+                              <Trash size={16} color="#ff4d4f" />
+                            </Button>
+                          </View>
+                        )}
                       </View>
                       
                       <View className="grid grid-cols-3 gap-2 text-sm mb-2">
@@ -617,9 +690,57 @@ const IndexPage = () => {
                 </View>
               </CardContent>
             </Card>
+
+            {/* 用户信息 */}
+            <Card className="mb-4">
+              <CardHeader>
+                <CardTitle>用户信息</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <View className="space-y-2">
+                  <View className="flex justify-between items-center">
+                    <Text className="text-gray-600">用户ID</Text>
+                    <Text className="text-xs text-gray-500">{userId}</Text>
+                  </View>
+                  <View className="flex justify-between items-center">
+                    <Text className="text-gray-600">权限</Text>
+                    <Badge variant={isAdmin ? 'default' : 'secondary'}>
+                      {isAdmin ? '管理员' : '普通用户'}
+                    </Badge>
+                  </View>
+                </View>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </View>
+
+      {/* 管理员登录对话框 */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>管理员登录</DialogTitle>
+          </DialogHeader>
+          <View className="py-4">
+            <Label className="block text-sm font-medium mb-2">请输入管理员密码</Label>
+            <Input
+              type="safe-password"
+              placeholder="管理员密码"
+              value={password}
+              onInput={(e) => setPassword(e.detail.value)}
+              className="w-full"
+            />
+          </View>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPasswordDialog(false)}>
+              取消
+            </Button>
+            <Button onClick={handleAdminLogin}>
+              登录
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* 编辑对话框 */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
