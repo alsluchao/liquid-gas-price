@@ -139,6 +139,16 @@ export class GasLiquidService {
       '数量': Number(record.quantity),
       '单价': Number(record.unit_price),
       '金额': Number(record.amount),
+      '销货单位': record.sales_unit || '',
+      '装车日期': record.loading_date ? new Date(record.loading_date).toLocaleDateString('zh-CN') : '',
+      '车号': record.truck_number || '',
+      '提货量(吨)': record.pickup_quantity ? Number(record.pickup_quantity) : '',
+      '一票制总价': record.one_ticket_price ? Number(record.one_ticket_price) : '',
+      '销售金额': record.sales_amount ? Number(record.sales_amount) : '',
+      '液单价': record.liquid_unit_price ? Number(record.liquid_unit_price) : '',
+      '服务费单价': record.service_fee_unit_price ? Number(record.service_fee_unit_price) : '',
+      '付款日期': record.payment_date ? new Date(record.payment_date).toLocaleDateString('zh-CN') : '',
+      '预付款金额': record.advance_payment ? Number(record.advance_payment) : '',
       '备注': record.remark || '',
       '创建时间': new Date(record.created_at).toLocaleString('zh-CN'),
     }));
@@ -151,11 +161,21 @@ export class GasLiquidService {
     worksheet['!cols'] = [
       { wch: 6 },  // 序号
       { wch: 12 }, // 日期
-      { wch: 15 }, // 类别
+      { wch: 12 }, // 类别
       { wch: 8 },  // 类型
       { wch: 10 }, // 数量
       { wch: 10 }, // 单价
       { wch: 12 }, // 金额
+      { wch: 20 }, // 销货单位
+      { wch: 12 }, // 装车日期
+      { wch: 12 }, // 车号
+      { wch: 12 }, // 提货量
+      { wch: 12 }, // 一票制总价
+      { wch: 12 }, // 销售金额
+      { wch: 10 }, // 液单价
+      { wch: 12 }, // 服务费单价
+      { wch: 12 }, // 付款日期
+      { wch: 12 }, // 预付款金额
       { wch: 20 }, // 备注
       { wch: 20 }, // 创建时间
     ];

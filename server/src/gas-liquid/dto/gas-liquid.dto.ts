@@ -29,6 +29,47 @@ export class CreateGasLiquidDto {
   @IsString()
   @IsOptional()
   remark?: string;
+
+  // 新增字段
+  @IsString()
+  @IsOptional()
+  sales_unit?: string; // 销货单位
+
+  @IsDateString()
+  @IsOptional()
+  loading_date?: string; // 装车日期
+
+  @IsString()
+  @IsOptional()
+  truck_number?: string; // 车号
+
+  @IsNumber()
+  @IsOptional()
+  pickup_quantity?: number; // 提货量（吨）
+
+  @IsNumber()
+  @IsOptional()
+  one_ticket_price?: number; // 一票制总价
+
+  @IsNumber()
+  @IsOptional()
+  sales_amount?: number; // 销售金额
+
+  @IsNumber()
+  @IsOptional()
+  liquid_unit_price?: number; // 液单价
+
+  @IsNumber()
+  @IsOptional()
+  service_fee_unit_price?: number; // 服务费单价
+
+  @IsDateString()
+  @IsOptional()
+  payment_date?: string; // 付款日期
+
+  @IsNumber()
+  @IsOptional()
+  advance_payment?: number; // 预付款金额
 }
 
 export class UpdateGasLiquidDto {
@@ -55,6 +96,47 @@ export class UpdateGasLiquidDto {
   @IsString()
   @IsOptional()
   remark?: string;
+
+  // 新增字段
+  @IsString()
+  @IsOptional()
+  sales_unit?: string;
+
+  @IsDateString()
+  @IsOptional()
+  loading_date?: string;
+
+  @IsString()
+  @IsOptional()
+  truck_number?: string;
+
+  @IsNumber()
+  @IsOptional()
+  pickup_quantity?: number;
+
+  @IsNumber()
+  @IsOptional()
+  one_ticket_price?: number;
+
+  @IsNumber()
+  @IsOptional()
+  sales_amount?: number;
+
+  @IsNumber()
+  @IsOptional()
+  liquid_unit_price?: number;
+
+  @IsNumber()
+  @IsOptional()
+  service_fee_unit_price?: number;
+
+  @IsDateString()
+  @IsOptional()
+  payment_date?: string;
+
+  @IsNumber()
+  @IsOptional()
+  advance_payment?: number;
 }
 
 export class QueryGasLiquidDto {

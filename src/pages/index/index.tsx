@@ -21,6 +21,16 @@ interface GasLiquidRecord {
   unit_price: string;
   amount: string;
   remark: string | null;
+  sales_unit?: string | null;
+  loading_date?: string | null;
+  truck_number?: string | null;
+  pickup_quantity?: string | null;
+  one_ticket_price?: string | null;
+  sales_amount?: string | null;
+  liquid_unit_price?: string | null;
+  service_fee_unit_price?: string | null;
+  payment_date?: string | null;
+  advance_payment?: string | null;
   created_at: string;
 }
 
@@ -53,6 +63,16 @@ const IndexPage = () => {
     quantity: '',
     unit_price: '',
     remark: '',
+    sales_unit: '',
+    loading_date: '',
+    truck_number: '',
+    pickup_quantity: '',
+    one_ticket_price: '',
+    sales_amount: '',
+    liquid_unit_price: '',
+    service_fee_unit_price: '',
+    payment_date: '',
+    advance_payment: '',
   });
   const [editFormData, setEditFormData] = useState({
     date: '',
@@ -61,6 +81,16 @@ const IndexPage = () => {
     quantity: '',
     unit_price: '',
     remark: '',
+    sales_unit: '',
+    loading_date: '',
+    truck_number: '',
+    pickup_quantity: '',
+    one_ticket_price: '',
+    sales_amount: '',
+    liquid_unit_price: '',
+    service_fee_unit_price: '',
+    payment_date: '',
+    advance_payment: '',
   });
 
   useReady(() => {
@@ -95,17 +125,31 @@ const IndexPage = () => {
 
     setLoading(true);
     try {
+      const submitData: any = {
+        date: formData.date,
+        category: formData.category,
+        type: formData.type,
+        quantity: parseFloat(formData.quantity),
+        unit_price: parseFloat(formData.unit_price),
+      };
+
+      // 添加可选字段
+      if (formData.remark) submitData.remark = formData.remark;
+      if (formData.sales_unit) submitData.sales_unit = formData.sales_unit;
+      if (formData.loading_date) submitData.loading_date = formData.loading_date;
+      if (formData.truck_number) submitData.truck_number = formData.truck_number;
+      if (formData.pickup_quantity) submitData.pickup_quantity = parseFloat(formData.pickup_quantity);
+      if (formData.one_ticket_price) submitData.one_ticket_price = parseFloat(formData.one_ticket_price);
+      if (formData.sales_amount) submitData.sales_amount = parseFloat(formData.sales_amount);
+      if (formData.liquid_unit_price) submitData.liquid_unit_price = parseFloat(formData.liquid_unit_price);
+      if (formData.service_fee_unit_price) submitData.service_fee_unit_price = parseFloat(formData.service_fee_unit_price);
+      if (formData.payment_date) submitData.payment_date = formData.payment_date;
+      if (formData.advance_payment) submitData.advance_payment = parseFloat(formData.advance_payment);
+
       await Network.request({
         url: '/api/gas-liquid',
         method: 'POST',
-        data: {
-          date: formData.date,
-          category: formData.category,
-          type: formData.type,
-          quantity: parseFloat(formData.quantity),
-          unit_price: parseFloat(formData.unit_price),
-          remark: formData.remark || undefined,
-        },
+        data: submitData,
       });
 
       Taro.showToast({ title: '添加成功', icon: 'success' });
@@ -116,6 +160,16 @@ const IndexPage = () => {
         quantity: '',
         unit_price: '',
         remark: '',
+        sales_unit: '',
+        loading_date: '',
+        truck_number: '',
+        pickup_quantity: '',
+        one_ticket_price: '',
+        sales_amount: '',
+        liquid_unit_price: '',
+        service_fee_unit_price: '',
+        payment_date: '',
+        advance_payment: '',
       });
       loadData();
     } catch (error) {
@@ -135,6 +189,16 @@ const IndexPage = () => {
       quantity: record.quantity,
       unit_price: record.unit_price,
       remark: record.remark || '',
+      sales_unit: record.sales_unit || '',
+      loading_date: record.loading_date ? record.loading_date.split('T')[0] : '',
+      truck_number: record.truck_number || '',
+      pickup_quantity: record.pickup_quantity || '',
+      one_ticket_price: record.one_ticket_price || '',
+      sales_amount: record.sales_amount || '',
+      liquid_unit_price: record.liquid_unit_price || '',
+      service_fee_unit_price: record.service_fee_unit_price || '',
+      payment_date: record.payment_date ? record.payment_date.split('T')[0] : '',
+      advance_payment: record.advance_payment || '',
     });
     setEditDialogOpen(true);
   };
@@ -144,17 +208,31 @@ const IndexPage = () => {
 
     setLoading(true);
     try {
+      const updateData: any = {
+        date: editFormData.date,
+        category: editFormData.category,
+        type: editFormData.type,
+        quantity: parseFloat(editFormData.quantity),
+        unit_price: parseFloat(editFormData.unit_price),
+      };
+
+      // 添加可选字段
+      if (editFormData.remark) updateData.remark = editFormData.remark;
+      if (editFormData.sales_unit) updateData.sales_unit = editFormData.sales_unit;
+      if (editFormData.loading_date) updateData.loading_date = editFormData.loading_date;
+      if (editFormData.truck_number) updateData.truck_number = editFormData.truck_number;
+      if (editFormData.pickup_quantity) updateData.pickup_quantity = parseFloat(editFormData.pickup_quantity);
+      if (editFormData.one_ticket_price) updateData.one_ticket_price = parseFloat(editFormData.one_ticket_price);
+      if (editFormData.sales_amount) updateData.sales_amount = parseFloat(editFormData.sales_amount);
+      if (editFormData.liquid_unit_price) updateData.liquid_unit_price = parseFloat(editFormData.liquid_unit_price);
+      if (editFormData.service_fee_unit_price) updateData.service_fee_unit_price = parseFloat(editFormData.service_fee_unit_price);
+      if (editFormData.payment_date) updateData.payment_date = editFormData.payment_date;
+      if (editFormData.advance_payment) updateData.advance_payment = parseFloat(editFormData.advance_payment);
+
       await Network.request({
         url: `/api/gas-liquid/${selectedRecord.id}`,
         method: 'PUT',
-        data: {
-          date: editFormData.date,
-          category: editFormData.category,
-          type: editFormData.type,
-          quantity: parseFloat(editFormData.quantity),
-          unit_price: parseFloat(editFormData.unit_price),
-          remark: editFormData.remark || undefined,
-        },
+        data: updateData,
       });
 
       Taro.showToast({ title: '更新成功', icon: 'success' });
@@ -225,6 +303,54 @@ const IndexPage = () => {
     }
   };
 
+  // 渲染输入字段
+  const renderInputField = (
+    label: string, 
+    key: keyof typeof formData, 
+    placeholder: string, 
+    type?: 'text' | 'number' | 'idcard' | 'digit' | 'safe-password' | 'nickname'
+  ) => {
+    const value = formData[key];
+    return (
+      <View className="mb-3">
+        <Label className="block text-sm font-medium mb-1 text-gray-700">{label}</Label>
+        <View className="bg-gray-50 rounded-lg px-3 py-2">
+          <Input
+            type={type}
+            placeholder={placeholder}
+            value={value as string}
+            onInput={(e) => setFormData({ ...formData, [key]: e.detail.value })}
+            className="w-full bg-transparent text-sm"
+          />
+        </View>
+      </View>
+    );
+  };
+
+  // 渲染编辑输入字段
+  const renderEditInputField = (
+    label: string, 
+    key: keyof typeof editFormData, 
+    placeholder: string, 
+    type?: 'text' | 'number' | 'idcard' | 'digit' | 'safe-password' | 'nickname'
+  ) => {
+    const value = editFormData[key];
+    return (
+      <View className="mb-3">
+        <Label className="block text-sm font-medium mb-1 text-gray-700">{label}</Label>
+        <View className="bg-gray-50 rounded-lg px-3 py-2">
+          <Input
+            type={type}
+            placeholder={placeholder}
+            value={value as string}
+            onInput={(e) => setEditFormData({ ...editFormData, [key]: e.detail.value })}
+            className="w-full bg-transparent text-sm"
+          />
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View className="w-full min-h-screen bg-gray-50 pb-20">
       {/* 顶部统计卡片 */}
@@ -269,99 +395,94 @@ const IndexPage = () => {
                   <Text>添加记录</Text>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <View>
-                  <Label className="block text-sm font-medium mb-2">日期</Label>
-                  <View className="bg-gray-50 rounded-xl px-4 py-3">
-                    <Input
-                      value={formData.date}
-                      onInput={(e) => setFormData({ ...formData, date: e.detail.value })}
-                      className="w-full bg-transparent"
-                      placeholder="YYYY-MM-DD"
-                    />
-                  </View>
-                </View>
-
-                <View>
-                  <Label className="block text-sm font-medium mb-2">类别</Label>
-                  <Input
-                    placeholder="如：氧气、氮气、液体等"
-                    value={formData.category}
-                    onInput={(e) => setFormData({ ...formData, category: e.detail.value })}
-                    className="w-full"
-                  />
-                  {categories.length > 0 && (
-                    <View className="flex flex-wrap gap-2 mt-2">
-                      {categories.slice(0, 5).map((cat) => (
-                        <Badge
-                          key={cat}
-                          variant="secondary"
-                          className="cursor-pointer"
-                          onClick={() => setFormData({ ...formData, category: cat })}
-                        >
-                          {cat}
-                        </Badge>
-                      ))}
+              <CardContent>
+                {/* 基础信息 */}
+                <View className="mb-4">
+                  <Text className="block text-base font-semibold mb-2 text-gray-800">基础信息</Text>
+                  {renderInputField('日期', 'date', 'YYYY-MM-DD')}
+                  
+                  <View className="mb-3">
+                    <Label className="block text-sm font-medium mb-1 text-gray-700">类别</Label>
+                    <View className="bg-gray-50 rounded-lg px-3 py-2">
+                      <Input
+                        placeholder="如：氧气、氮气、液氧等"
+                        value={formData.category}
+                        onInput={(e) => setFormData({ ...formData, category: e.detail.value })}
+                        className="w-full bg-transparent text-sm"
+                      />
                     </View>
-                  )}
-                </View>
-
-                <View>
-                  <Label className="block text-sm font-medium mb-2">类型</Label>
-                  <View className="flex gap-2">
-                    <Button
-                      variant={formData.type === '进货' ? 'default' : 'outline'}
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => setFormData({ ...formData, type: '进货' })}
-                    >
-                      进货
-                    </Button>
-                    <Button
-                      variant={formData.type === '出货' ? 'default' : 'outline'}
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => setFormData({ ...formData, type: '出货' })}
-                    >
-                      出货
-                    </Button>
+                    {categories.length > 0 && (
+                      <View className="flex flex-wrap gap-2 mt-2">
+                        {categories.slice(0, 5).map((cat) => (
+                          <Badge
+                            key={cat}
+                            variant="secondary"
+                            className="cursor-pointer"
+                            onClick={() => setFormData({ ...formData, category: cat })}
+                          >
+                            {cat}
+                          </Badge>
+                        ))}
+                      </View>
+                    )}
                   </View>
+
+                  <View className="mb-3">
+                    <Label className="block text-sm font-medium mb-1 text-gray-700">类型</Label>
+                    <View className="flex gap-2">
+                      <Button
+                        variant={formData.type === '进货' ? 'default' : 'outline'}
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => setFormData({ ...formData, type: '进货' })}
+                      >
+                        进货
+                      </Button>
+                      <Button
+                        variant={formData.type === '出货' ? 'default' : 'outline'}
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => setFormData({ ...formData, type: '出货' })}
+                      >
+                        出货
+                      </Button>
+                    </View>
+                  </View>
+
+                  {renderInputField('数量', 'quantity', '请输入数量', 'digit')}
+                  {renderInputField('单价', 'unit_price', '请输入单价', 'digit')}
                 </View>
 
-                <View>
-                  <Label className="block text-sm font-medium mb-2">数量</Label>
-                  <Input
-                    type="digit"
-                    placeholder="请输入数量"
-                    value={formData.quantity}
-                    onInput={(e) => setFormData({ ...formData, quantity: e.detail.value })}
-                    className="w-full"
-                  />
+                {/* 销售信息 */}
+                <View className="mb-4">
+                  <Text className="block text-base font-semibold mb-2 text-gray-800">销售信息</Text>
+                  {renderInputField('销货单位', 'sales_unit', '销货单位名称')}
+                  {renderInputField('装车日期', 'loading_date', 'YYYY-MM-DD')}
+                  {renderInputField('车号', 'truck_number', '车牌号')}
+                  {renderInputField('提货量（吨）', 'pickup_quantity', '提货量', 'digit')}
                 </View>
 
-                <View>
-                  <Label className="block text-sm font-medium mb-2">单价</Label>
-                  <Input
-                    type="digit"
-                    placeholder="请输入单价"
-                    value={formData.unit_price}
-                    onInput={(e) => setFormData({ ...formData, unit_price: e.detail.value })}
-                    className="w-full"
-                  />
+                {/* 金额信息 */}
+                <View className="mb-4">
+                  <Text className="block text-base font-semibold mb-2 text-gray-800">金额信息</Text>
+                  {renderInputField('一票制总价', 'one_ticket_price', '一票制总价', 'digit')}
+                  {renderInputField('销售金额', 'sales_amount', '销售金额', 'digit')}
+                  {renderInputField('液单价', 'liquid_unit_price', '液单价', 'digit')}
+                  {renderInputField('服务费单价', 'service_fee_unit_price', '服务费单价', 'digit')}
                 </View>
 
-                <View>
-                  <Label className="block text-sm font-medium mb-2">备注（可选）</Label>
-                  <Input
-                    placeholder="备注信息"
-                    value={formData.remark}
-                    onInput={(e) => setFormData({ ...formData, remark: e.detail.value })}
-                    className="w-full"
-                  />
+                {/* 付款信息 */}
+                <View className="mb-4">
+                  <Text className="block text-base font-semibold mb-2 text-gray-800">付款信息</Text>
+                  {renderInputField('付款日期', 'payment_date', 'YYYY-MM-DD')}
+                  {renderInputField('预付款金额', 'advance_payment', '预付款金额', 'digit')}
                 </View>
+
+                {/* 备注 */}
+                {renderInputField('备注', 'remark', '备注信息')}
 
                 <Button
-                  className="w-full"
+                  className="w-full mt-4"
                   onClick={handleSubmit}
                   disabled={loading}
                 >
@@ -420,7 +541,8 @@ const IndexPage = () => {
                           </Button>
                         </View>
                       </View>
-                      <View className="grid grid-cols-3 gap-2 text-sm">
+                      
+                      <View className="grid grid-cols-3 gap-2 text-sm mb-2">
                         <View>
                           <Text className="text-gray-500">数量</Text>
                           <Text className="font-medium">{record.quantity}</Text>
@@ -434,6 +556,22 @@ const IndexPage = () => {
                           <Text className="font-semibold text-blue-600">¥{record.amount}</Text>
                         </View>
                       </View>
+
+                      {/* 显示扩展信息 */}
+                      {(record.sales_unit || record.truck_number || record.pickup_quantity) && (
+                        <View className="pt-2 border-t border-gray-100 mt-2">
+                          {record.sales_unit && (
+                            <Text className="text-xs text-gray-600">销货单位: {record.sales_unit}</Text>
+                          )}
+                          {record.truck_number && (
+                            <Text className="text-xs text-gray-600 ml-2">车号: {record.truck_number}</Text>
+                          )}
+                          {record.pickup_quantity && (
+                            <Text className="text-xs text-gray-600 ml-2">提货量: {record.pickup_quantity}吨</Text>
+                          )}
+                        </View>
+                      )}
+
                       {record.remark && (
                         <View className="mt-2 pt-2 border-t border-gray-100">
                           <Text className="text-sm text-gray-600">备注: {record.remark}</Text>
@@ -485,32 +623,29 @@ const IndexPage = () => {
 
       {/* 编辑对话框 */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-screen overflow-y-auto">
           <DialogHeader>
             <DialogTitle>编辑记录</DialogTitle>
           </DialogHeader>
-          <View className="space-y-4">
-            <View>
-              <Label className="block text-sm font-medium mb-2">日期</Label>
-              <View className="bg-gray-50 rounded-xl px-4 py-3">
+          
+          {/* 基础信息 */}
+          <View className="mb-3">
+            <Text className="block text-sm font-semibold mb-2 text-gray-800">基础信息</Text>
+            {renderEditInputField('日期', 'date', 'YYYY-MM-DD')}
+            
+            <View className="mb-3">
+              <Label className="block text-sm font-medium mb-1 text-gray-700">类别</Label>
+              <View className="bg-gray-50 rounded-lg px-3 py-2">
                 <Input
-                  value={editFormData.date}
-                  onInput={(e) => setEditFormData({ ...editFormData, date: e.detail.value })}
-                  className="w-full bg-transparent"
-                  placeholder="YYYY-MM-DD"
+                  value={editFormData.category}
+                  onInput={(e) => setEditFormData({ ...editFormData, category: e.detail.value })}
+                  className="w-full bg-transparent text-sm"
                 />
               </View>
             </View>
-            <View>
-              <Label className="block text-sm font-medium mb-2">类别</Label>
-              <Input
-                value={editFormData.category}
-                onInput={(e) => setEditFormData({ ...editFormData, category: e.detail.value })}
-                className="w-full"
-              />
-            </View>
-            <View>
-              <Label className="block text-sm font-medium mb-2">类型</Label>
+
+            <View className="mb-3">
+              <Label className="block text-sm font-medium mb-1 text-gray-700">类型</Label>
               <View className="flex gap-2">
                 <Button
                   variant={editFormData.type === '进货' ? 'default' : 'outline'}
@@ -530,33 +665,38 @@ const IndexPage = () => {
                 </Button>
               </View>
             </View>
-            <View>
-              <Label className="block text-sm font-medium mb-2">数量</Label>
-              <Input
-                type="digit"
-                value={editFormData.quantity}
-                onInput={(e) => setEditFormData({ ...editFormData, quantity: e.detail.value })}
-                className="w-full"
-              />
-            </View>
-            <View>
-              <Label className="block text-sm font-medium mb-2">单价</Label>
-              <Input
-                type="digit"
-                value={editFormData.unit_price}
-                onInput={(e) => setEditFormData({ ...editFormData, unit_price: e.detail.value })}
-                className="w-full"
-              />
-            </View>
-            <View>
-              <Label className="block text-sm font-medium mb-2">备注</Label>
-              <Input
-                value={editFormData.remark}
-                onInput={(e) => setEditFormData({ ...editFormData, remark: e.detail.value })}
-                className="w-full"
-              />
-            </View>
+
+            {renderEditInputField('数量', 'quantity', '数量', 'digit')}
+            {renderEditInputField('单价', 'unit_price', '单价', 'digit')}
           </View>
+
+          {/* 销售信息 */}
+          <View className="mb-3">
+            <Text className="block text-sm font-semibold mb-2 text-gray-800">销售信息</Text>
+            {renderEditInputField('销货单位', 'sales_unit', '销货单位')}
+            {renderEditInputField('装车日期', 'loading_date', 'YYYY-MM-DD')}
+            {renderEditInputField('车号', 'truck_number', '车牌号')}
+            {renderEditInputField('提货量（吨）', 'pickup_quantity', '提货量', 'digit')}
+          </View>
+
+          {/* 金额信息 */}
+          <View className="mb-3">
+            <Text className="block text-sm font-semibold mb-2 text-gray-800">金额信息</Text>
+            {renderEditInputField('一票制总价', 'one_ticket_price', '一票制总价', 'digit')}
+            {renderEditInputField('销售金额', 'sales_amount', '销售金额', 'digit')}
+            {renderEditInputField('液单价', 'liquid_unit_price', '液单价', 'digit')}
+            {renderEditInputField('服务费单价', 'service_fee_unit_price', '服务费单价', 'digit')}
+          </View>
+
+          {/* 付款信息 */}
+          <View className="mb-3">
+            <Text className="block text-sm font-semibold mb-2 text-gray-800">付款信息</Text>
+            {renderEditInputField('付款日期', 'payment_date', 'YYYY-MM-DD')}
+            {renderEditInputField('预付款金额', 'advance_payment', '预付款金额', 'digit')}
+          </View>
+
+          {renderEditInputField('备注', 'remark', '备注')}
+          
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
               取消
