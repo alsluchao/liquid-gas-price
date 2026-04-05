@@ -6,7 +6,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <WebView
-        source={{ uri: 'http://9.129.250.171:5000' }}
+        source={{ uri: 'http://9.128.54.29:5000' }}
         style={styles.webview}
         startInLoadingState={true}
         renderLoading={() => (
