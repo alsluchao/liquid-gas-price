@@ -2,7 +2,7 @@ import React from 'react';
 import { WebView } from 'react-native-webview';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
-const SERVER_URL = 'http://115.191.1.173:5000';
+const SERVER_URL = 'http://101.126.95.49:5000';
 
 export default function App() {
   return (
