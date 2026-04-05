@@ -2,32 +2,16 @@
   "expo": {
     "name": "液气价格统计",
     "slug": "liquid-gas-app",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.liquidgas.app"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "package": "com.liquidgas.app",
-      "versionCode": 6
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "versionCode": 7
     },
     "extra": {
       "eas": {
