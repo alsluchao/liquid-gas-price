@@ -1,31 +1,40 @@
 {
   "expo": {
     "name": "液气价格统计",
-    "slug": "gas-liquid-stats",
-    "owner": "alsluchao",
-    "version": "1.0.3",
+    "slug": "liquid-gas-app",
+    "version": "2.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "backgroundColor": "#1890ff"
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gasliquid.stats"
+      "bundleIdentifier": "com.liquidgas.app"
     },
     "android": {
-      "package": "com.gasliquid.stats",
-      "versionCode": 4,
-      "permissions": [
-        "INTERNET",
-        "ACCESS_NETWORK_STATE"
-      ]
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.liquidgas.app",
+      "versionCode": 5
     },
-    "web": {},
-    "plugins": [],
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-web-browser"
+    ],
     "extra": {
       "eas": {
-        "projectId": "de125a65-b861-4df6-a400-5c6f43b84684"
+        "projectId": "4b9e5a3d-2cd6-4a90-b825-4f5e4c3b2a1d"
       }
     }
   }
